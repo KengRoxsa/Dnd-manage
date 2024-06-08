@@ -1,0 +1,27 @@
+
+[...something] ใน nextjs คือ คุณกำลังใช้ Dynamic Routes หรือเส้นทางที่เปลี่ยนแปลงได้ตามค่าที่ถูกส่งเข้ามาใน URL ในส่วนนี้ [...] หมายถึงค่าที่เปลี่ยนไปตามแต่ละเส้นทาง URL และ something คือชื่อที่คุณกำหนดไว้เอง
+
+Windows/Linux: Ctrl + Shift + [ เพื่อหุบทุกโฟลเดอร์ในโปรเจกต์
+Windows/Linux: Ctrl + Shift + ] เพื่อขยายทุกโฟลเดอร์ในโปรเจกต์
+
+*** เวลากำหนดส่วนการทำงาน ดูดีๆ use client ใช้ user ทีมีพัง
+
+: ศึกษา Dynamic Routing เพิ่ม
+
+: console.log ในหน้า create ยังไม่ได้ลบนะ
+
+:    ในการสร้าง DeleteBtn เจอปํญหาการใช้ / กับ = ในการเชื่อมพาท
+
+        const res = await fetch(`http://localhost:3000/api/posts?id=${id}`, { // ใช้ query string "id"
+                method: "DELETE",
+
+        const res = await fetch(`http://localhost:3000/api/posts?id/${id}`, {
+                 method: "DELETE",
+
+ ตรง = กับ /  การใช้เครื่องหมาย / หรือ ? ใน URL จะมีผลต่อวิธีการส่งข้อมูลไปยังเซิร์ฟเวอร์ในแบบต่าง ๆ 
+ โดย เครื่องหมาย / ใช้ในการกำหนด path segments ใน URL:
+               & ใช้ในการแยก query parameters ที่แตกต่างกัน เช่น:
+
+ แก้ไขแล้ว
+
+ ในการทำ admin show post ในตอนแรกจำนวนโพสมัน(น่าจะ)ไปต่อกับ mockup อย่าตกใจ
