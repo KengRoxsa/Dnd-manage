@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import Container from "./components/container";
+import Container from "./components/Container";
 import Navbar from "./components/Navbar";
 import Vercel from "../../public/vercel.svg";
 import Footer from "./components/Footer";
