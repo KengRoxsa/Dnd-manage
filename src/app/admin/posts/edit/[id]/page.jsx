@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import AdminNav from "../../../components/AdminNav";
 import Footer from "../../../components/Footer";
 import Link from "next/link";
-import Container from "../../../components/ContainerA";
+import Container from "../../../components/Container";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";

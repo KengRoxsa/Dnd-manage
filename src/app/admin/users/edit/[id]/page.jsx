@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AdminNav from "@/app/admin/components/AdminNav";
 import Footer from "@/app/components/Footer";
-import Container from "../../../components/ContainerA";
+import Container from "../../../components/Container";
 import Link from "next/link";
 
 import { useSession } from "next-auth/react";
