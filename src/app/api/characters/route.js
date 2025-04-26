@@ -3,6 +3,17 @@ import Character from "../../../../models/character";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 
+export async function DELETE(req) {
+  try {
+      const id = req.nextUrl.searchParams.get("id");
+      await connectMongoDB();
+      await Character.findByIdAndDelete(id);
+      return NextResponse.json({ message: "Character deleted successfully" }, { status: 200 });
+  } catch (error) {
+      console.error(error);
+      return NextResponse.json({ message: "Error deleting character" }, { status: 500 });
+  }
+}
 
 // API GET สำหรับดึงข้อมูลตัวละคร
 export async function GET(req) {

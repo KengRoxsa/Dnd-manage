@@ -9,6 +9,7 @@ import Container from '../components/Container'
 import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import DeleteBtn from './DeleteBtn'
+import DeleteCharacter from './DeleteCharacter'
 
 
 function WelcomePage() {
@@ -42,28 +43,28 @@ function WelcomePage() {
   // ดึงข้อมูลตัวละคร
   // ดึงข้อมูลตัวละคร
   const getCharacters = async () => {
-    if (!session || !session.user || !session.user._id) {
-      console.error("User ID not found in session");
+    console.log("session:", session);
+    
+    if (!session || !session.user || !session.user.id) {  // ใช้ session.user.id แทน session.user._id
+      console.error("session not found in session");
       return;
     }
   
-    console.log("Fetching characters for user ID:", session.user._id);
-  
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters?createdBy=${session.user._id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/characters?createdBy=${session.user.id}`, {
         cache: "no-store",
       });
   
       if (!res.ok) throw new Error("Failed to load characters");
   
       const data = await res.json();
-      console.log("Fetched characters:", data.characters);
       setCharacterData(data.characters);
   
     } catch (error) {
       console.error("Error loading characters:", error);
     }
   };
+  
   
   // ดึงข้อมูลตัวละคร  
   
@@ -134,6 +135,7 @@ function WelcomePage() {
           alt={character.name}
         />
         <p>{character.description}</p>
+        <DeleteCharacter id={character._id} />
       </div>
     ))
   ) : (
