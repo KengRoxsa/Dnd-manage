@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images:{
-        domains:["i.redd.it","www.google.com","www.compgamer.com",'images.unsplash.com',"i0.wp.com","s.isanook.com"]
+        unoptimized: true,
+        domains:["i.redd.it","www.google.com","www.compgamer.com",'images.unsplash.com',"i0.wp.com","s.isanook.com",'picsum.photos']
     }
 };
 

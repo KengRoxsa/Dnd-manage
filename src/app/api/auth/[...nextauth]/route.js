@@ -46,6 +46,7 @@ const authOptions = {
                 ...token,
                 id: user.id,
                 role: user.role
+                
             }
         }
 
