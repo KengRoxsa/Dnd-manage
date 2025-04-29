@@ -20,10 +20,12 @@ function AdminPage() {
 //ส่วนการดึง data ( user กับ post ) มาแสดง
     const [totalUsersData, setTotalUsersData] = useState([]);
     const [totalPostsData, setTotalPostsData] = useState([]);
+    const [totalCharactersData, setTotalCharactersData] = useState([]);
 
     // สำหรับทดสอบ อย่าลืมมาลบ log นี้ออกนะ
     console.log("Total Users wait for delete to complete: ", totalUsersData);
     console.log("Total Posts wait for delete to complete: ", totalPostsData);
+    console.log("Total Characters wait for delete to complete: ", totalCharactersData);
 
     // อันแรก เป็นดึง จน. user ทั้งหมด
     const getTotalUsers = async () => {
@@ -61,12 +63,30 @@ function AdminPage() {
             console.log("Error loading posts : ", error);
         }
     }
+    const getTotalCharacters = async () => {
+        try{
+            const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/totalcharacters`, {
+                cache: "no-store",   
+            })
+            if(!res.ok){
+                throw new Error("Failed to fetch total characters");
+            }
+
+            const data = await res.json();
+            setTotalCharactersData(data.totalCharacters);
+
+
+        }catch(error){
+            console.log("Error loading characters : ", error);
+        }
+    }
 
 
 
     useEffect(()=>{
         getTotalUsers();
         getTotalPosts();
+        getTotalCharacters();
     },[])
 
   return (

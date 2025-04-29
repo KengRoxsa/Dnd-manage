@@ -17,23 +17,36 @@ export async function DELETE(req) {
 
 // API GET สำหรับดึงข้อมูลตัวละคร
 export async function GET(req) {
-    try {
-      await connectMongoDB();
-      const { searchParams } = new URL(req.url);
-      const createdBy = searchParams.get("createdBy");
-  
-      if (!createdBy) {
-        return NextResponse.json({ error: "CreatedBy is required" }, { status: 400 });
-      }
-  
-      // ตรวจสอบให้ `createdBy` เป็น ObjectId
-      const characters = await Character.find({ createdBy: new mongoose.Types.ObjectId(createdBy) });
-      return NextResponse.json({ characters }, { status: 200 });
-    } catch (error) {
-      console.error("Error fetching characters:", error);
-      return NextResponse.json({ error: "Failed to fetch characters", details: error.message }, { status: 500 });
+  try {
+    await connectMongoDB();
+    const { searchParams } = new URL(req.url);
+
+    const createdBy = searchParams.get("createdBy");
+    const name = searchParams.get("name");
+
+    let filter = {};
+
+    if (createdBy) {
+      filter.createdBy = new mongoose.Types.ObjectId(createdBy);
     }
+
+    if (name) {
+      // ใช้ regex สำหรับค้นหาที่ไม่ตรงตัวเป๊ะ เช่น "war" เจอ "Warrior"
+      filter.name = { $regex: new RegExp(name, "i") };
+    }
+
+    const characters = await Character.find(filter);
+
+    return NextResponse.json({ characters }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching characters:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch characters", details: error.message },
+      { status: 500 }
+    );
   }
+}
+
   
 export async function POST(req) {
   try {
@@ -69,5 +82,26 @@ export async function POST(req) {
     return NextResponse.json({ error: "Failed to create character", details: error.message }, { status: 500 });
   }
 }
+// PUT: อัปเดตตัวละคร
+export async function PUT(req) {
+  try {
+    const { id, ...updates } = await req.json();
+    await connectMongoDB();
 
-  
+    // อัปเดต character โดย id
+    const updatedCharacter = await Character.findByIdAndUpdate(
+      id,
+      updates,
+      { new: true } // คืนค่า document ใหม่หลังอัปเดต
+    );
+
+    if (!updatedCharacter) {
+      return NextResponse.json({ error: "Character not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Character updated successfully", character: updatedCharacter }, { status: 200 });
+  } catch (error) {
+    console.error("PUT error:", error);
+    return NextResponse.json({ error: "Failed to update character", details: error.message }, { status: 500 });
+  }
+}

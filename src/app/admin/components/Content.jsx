@@ -18,7 +18,8 @@ function Content({totalUsersData, totalPostsData}) {
             </div>
         </div>
         <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum dolorem, natus repudiandae id quibusdam eos ea esse consectetur pariatur in vel vero, dolor ipsam placeat, excepturi qui quas consequatur officiis?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum 
+            dolorem, natus repudiandae id quibusdam eos ea esse consectetur pariatur in vel vero, dolor ipsam placeat, excepturi qui quas consequatur officiis?
         </p>
     </div>
   )
