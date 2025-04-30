@@ -106,8 +106,8 @@ export default function MapCanvas() {
 
   return (
     <div className="map-container w-full p-4 flex flex-col items-center">
-      <h2 className="text-xl font-bold mb-4">🗺️ แผนที่</h2>
-
+      <h2 className="text-xl font-bold mb-4">🗺️ แคมเปญจ์</h2>
+      
       {/* Map Upload */}
       <div className="mb-4">
         <label className="block mb-2 text-sm font-medium">

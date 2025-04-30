@@ -106,12 +106,16 @@ function WelcomePage() {
   return (
     <Container>
       <BackgroundSlider />
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 opacity-80"
+      >
+
       <Navbar session={session} />
+      </div>
 
       <div className='flex-grow'>
         <div className='container mx-auto shadow-xl my-10 p-10 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50'>
-          <div className='flex justify-between p-6 rounded-lg shadow-md'>
-            <div className='text-indigo-900 bg-indigo-100 p-4 rounded-lg'>
+          <div className='flex justify-between p-6 rounded-lg shadow-md flex-col'>
+            <div className='text-indigo-900 bg-indigo-100 p-4 rounded-lg mb-4'>
               <h3 className='text-3xl font-bold mb-4'>Profile</h3>
               <p className='m-4 text-lg'>
                 Welcome, <span className='font-semibold text-indigo-700'>{session?.user?.name}</span> sir
@@ -123,13 +127,22 @@ function WelcomePage() {
             </div>
 
             <div className='space-y-4'>
-              <Link href="/create" className='bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow hover:shadow-lg'>
-                Create Post
-              </Link>
+            <div className="flex flex-col space-y-2">
+  <Link
+    href="/create"
+    className="w-[180px] bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow hover:shadow-lg"
+  >
+    Create Post
+  </Link>
 
-              <Link href="/createCharacter" className='bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow hover:shadow-lg'>
-                Create Character
-              </Link>
+  <Link
+    href="/createCharacter"
+    className="w-[180px] bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow hover:shadow-lg"
+  >
+    Create Character
+  </Link>
+</div>
+
 
               <div className="bg-red-100 p-4 rounded-lg shadow">
                 <form onSubmit={handleJoinRoom} className="flex flex-col space-y-3">
@@ -153,12 +166,14 @@ function WelcomePage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className='bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow hover:shadow-lg disabled:opacity-50'
+                    className='bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg text-lg transition-all duration-300 transform hover:scale-101 shadow hover:shadow-lg disabled:opacity-50'
                   >
                     {loading ? "Joining..." : "Join Room"}
                   </button>
+                  
                   {errorMessage && <p className="text-red-500">{errorMessage}</p>}
                 </form>
+                
               </div>
 
               {foundRoom && (
@@ -169,14 +184,14 @@ function WelcomePage() {
     <p><span className="font-medium">Room ID:</span> {foundRoom._id || "No description provided"}</p>
 
     <Link href={`/dndroom/${foundRoom._id}`} >
-    <p className="text-sm text-gray-500">Debug Path: /dndroom/{foundRoom._id}</p>
-
+    
       <button className='mt-3 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg text-lg transition-all duration-300 transform hover:scale-105 shadow hover:shadow-lg'>
         Go to Room
       </button>
     </Link>
     
   </div>
+  
 )}
 
             </div>

@@ -10,6 +10,7 @@ import DeleteBtn from "./DeleteBtn";
 
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import DynamicBackground from "@/app/components/BackgroundSlider";
 
 function AdminUserManagePage() {
   const { data: session } = useSession();
@@ -40,71 +41,77 @@ function AdminUserManagePage() {
 
   return (
     <Container>
-      <AdminNav session={session} />
-      <div className="flex-grow">
-        <div className="container mx-auto">
-          <div className="flex mt-10">
-            <SideNav />
-            <div className="p-10">
-              <h3 className="text-3xl mb-3">Manage Posts</h3>
-              <p>A list of posts retrieved from a MongoDB database</p>
+  {/* Sticky Admin Navbar */}
+  <div className="sticky top-0 z-50 bg-white bg-opacity-80 backdrop-blur shadow-md">
+    <AdminNav session={session} />
+  </div>
 
-              <div className="shadow-lg overflow-x-auto">
-                <table className="text-left rounded-md mt-3 table-fixed w-full">
-                  <thead>
-                    <tr className="bg-gray-400">
-                      <th className="p-5">Post ID</th>
-                      <th className="p-5">Post Title</th>
-                      <th className="p-5">Post Image</th>
-                      <th className="p-5">Post Content</th>
-                      <th className="p-5">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allPostData?.map(val => (
-                      <tr key={val._id}>
-                        <td className="p-5">{val._id}</td>
-                        <td className="p-5">{val.title}</td>
-                        <td className="p-5">
-                          <Image
-                            className="my-3 rounded-md"
-                            src={val.img}
-                            width={80}
-                            height={80}
-                            alt={val.title}
-                          />
-                        </td>
-                        <td className="p-5">{val.content}</td>
-                        <td className="p-5">
-                          <Link
-                            className="bg-gray-500 text-white border py-2 px-3 rounded text-lg my-2"
-                            href={`/admin/posts/edit/${val._id}`}
-                          >
-                            Edit
-                          </Link>
+  {/* Background Animation */}
+  <DynamicBackground />
 
-                          <DeleteBtn id={val._id} />
-                          {/* อันนี้คือ ไม่ใช้แล้ว เป็น mock up code บรทัดล่างน่ะ */}
-                          {/* <Link
-                            className="bg-red-500 text-white border py-2 px-3 rounded text-lg my-2"
-                            href="/admin/posts/delete"
-                          >
-                            Delete
-                          </Link> */}
+  {/* Main Layout */}
+  <main className="flex-grow">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col lg:flex-row gap-8 bg-white bg-opacity-75 backdrop-blur rounded-2xl shadow-lg p-6">
 
-                          {/* อย่าลืมไปกำหนด path ใหม่ ใน route.js นะ */}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+        {/* Side Navigation */}
+        <aside className="w-full lg:w-1/4 flex flex-col pt-28">
+          <SideNav />
+        </aside>
+
+        {/* Content Area */}
+        <section className="w-full lg:w-3/4">
+          <h3 className="text-3xl font-bold text-gray-800 mb-2">Manage Posts</h3>
+          <p className="text-gray-600 mb-6">A list of posts retrieved from the MongoDB database</p>
+
+          <div className="rounded-xl overflow-x-auto shadow border border-gray-200">
+            <table className="min-w-full text-sm text-left">
+              <thead className="bg-gray-100 text-gray-700 uppercase">
+                <tr>
+                  <th className="p-4 w-1/6">Post ID</th>
+                  <th className="p-4 w-1/5">Title</th>
+                  <th className="p-4 w-1/5">Image</th>
+                  <th className="p-4">Content</th>
+                  <th className="p-4 w-1/6">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {allPostData?.map(val => (
+                  <tr key={val._id} className="hover:bg-gray-50 transition">
+                    <td className="p-4 font-mono text-xs truncate">{val._id}</td>
+                    <td className="p-4 font-medium">{val.title}</td>
+                    <td className="p-4">
+                      <Image
+                        className="rounded-md shadow"
+                        src={val.img}
+                        width={60}
+                        height={60}
+                        alt={val.title}
+                      />
+                    </td>
+                    <td className="p-4 max-w-sm truncate text-gray-700">{val.content}</td>
+                    <td className="p-4 flex gap-2 ">
+                      <Link
+                        href={`/admin/posts/edit/${val._id}`}
+                        className="bg-blue-500 hover:bg-blue-600 text-white border py-2 px-3 rounded-md text-lg my-2"
+                      >
+                        Edit
+                      </Link>
+                      <DeleteBtn id={val._id} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
+        </section>
       </div>
-      <Footer />
-    </Container>
+    </div>
+  </main>
+
+  <Footer />
+</Container>
+
   );
 }
 

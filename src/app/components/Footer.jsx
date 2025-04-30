@@ -4,7 +4,7 @@ import React from 'react'
 function Footer() {
   return (
     <footer className='p-3 bg-[#333] text-white text-center'>
-        <p>Copyright 2024</p>
+        <p>Post and DND App by Nithi Anyapho Copyright 2025</p>
         </footer>
   )
 }

@@ -8,6 +8,7 @@ import AdminNav from "../components/AdminNav";
 import Footer from "../components/Footer";
 import SideNav from "../components/SideNav";
 import Container from "../components/Container";
+import DynamicBackground from "@/app/components/BackgroundSlider";
 
 export default function AdminRoomsPage() {
   const { data: session } = useSession();
@@ -36,76 +37,85 @@ export default function AdminRoomsPage() {
 
   return (
     <Container>
-      <AdminNav session={session} />
-      <div className="flex-grow">
-        <div className="container mx-auto">
-          <div className="flex mt-10">
-            <SideNav />
-            <div className="p-10 w-full">
-              <h3 className="text-3xl mb-3">Manage Rooms</h3>
-              <p>สร้างและจัดการห้องเล่น DND</p>
+        <DynamicBackground />
+<div className="bg-gray-200 opacity-800">
+  <AdminNav session={session} />
+</div>
+  <div className="flex-grow">
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col mt-20 lg:flex-row mt-10 gap-8 bg-gray-50">
+        <aside className="w-full lg:w-1/4 pt-4">
+        <div className="mt-8 bg-white rounded-xl shadow-md p-8">
 
-              <div className="mb-6 mt-4">
-                <Link
-                  href="/admin/rooms/new"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  + Create Room
-                </Link>
-              </div>
-
-              <div className="shadow-lg overflow-x-auto">
-                <table className="text-left rounded-md mt-3 table-fixed w-full">
-                  <thead>
-                    <tr className="bg-gray-400">
-                      <th className="p-5">Room ID</th>
-                      <th className="p-5">Room Name</th>
-                      <th className="p-5">Join</th>
-                      <th className="p-5">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* แสดงข้อมูลห้องจาก state */}
-                    {rooms.length === 0 ? (
-                      <tr>
-                        <td colSpan="4" className="p-5 text-center">
-                          No rooms available
-                        </td>
-                      </tr>
-                    ) : (
-                      rooms.map((room) => (
-                        <tr key={room._id}>
-                          <td className="p-5">{room._id}</td>
-                          <td className="p-5">{room.name}</td>
-                          <td className="p-5">
-                            <Link href={`/dndroom/${room._id}`}>
-                              <button className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded">
-                                Join
-                              </button>
-                            </Link>
-                          </td>
-                          <td className="p-5">
-                            <Link
-                              href={`/admin/rooms/edit/${room._id}`}
-                              className="bg-gray-500 text-white px-3 py-2 rounded mr-2"
-                            >
-                              Edit
-                            </Link>
-                            <button className="bg-red-500 text-white px-3 py-2 rounded">
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+          <SideNav />
         </div>
+        </aside>
+
+        <main className="w-full bg-white rounded-xl shadow-md p-8">
+          <h3 className="text-3xl font-semibold text-gray-800 mb-2">Manage Rooms</h3>
+          <p className="text-gray-600 mb-6">สร้างและจัดการห้องเล่น DND</p>
+
+          <div className="mb-6">
+            <Link
+              href="/admin/rooms/new"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded-md transition"
+            >
+              + Create Room
+            </Link>
+          </div>
+
+          <div className="shadow-lg overflow-x-auto rounded-md">
+            <table className="w-full text-left table-auto">
+              <thead>
+                <tr className="bg-gray-200 text-gray-700 text-sm uppercase">
+                  <th className="p-4">Room ID</th>
+                  <th className="p-4">Room Name</th>
+                  <th className="p-4">Join</th>
+                  <th className="p-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rooms.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="p-5 text-center text-gray-500">
+                      No rooms available
+                    </td>
+                  </tr>
+                ) : (
+                  rooms.map((room) => (
+                    <tr key={room._id} className="hover:bg-gray-50 border-b">
+                      <td className="p-4 text-sm text-gray-800">{room._id}</td>
+                      <td className="p-4 text-sm">{room.name}</td>
+                      <td className="p-4">
+                        <Link href={`/dndroom/${room._id}`}>
+                          <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-md text-sm transition">
+                            Join
+                          </button>
+                        </Link>
+                      </td>
+                      <td className="p-4 flex flex-wrap gap-2">
+                        <Link
+                          href={`/admin/rooms/edit/${room._id}`}
+                          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1.5 rounded-md text-sm"
+                        >
+                          Edit
+                        </Link>
+                        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-md text-sm">
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </main>
       </div>
-      <Footer />
-    </Container>
+    </div>
+  </div>
+  <Footer />
+</Container>
+
   );
 }

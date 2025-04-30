@@ -13,7 +13,7 @@ function Navbar({session}) {
         <div className="flex justify-between items-center p-4">
           <div>
             <Link href="/">
-              <Image src={Logo} width={100} height={100} alt="NextJS Logo" />
+            <span className="text-4xl">🎲🐉🛡️</span>
             </Link>
           </div>
           <ul className='flex'>

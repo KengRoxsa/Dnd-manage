@@ -22,7 +22,7 @@ const DeleteCharacter = ({ id }) => {
     };
   
     return (
-      <a onClick={handleDelete} className='bg-red-500 text-white border py-2 px-3 rounded-md text-lg my-2'>
+      <a onClick={handleDelete} className='bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-md text-sm font-medium shadow'>
         Delete
       </a>
     );

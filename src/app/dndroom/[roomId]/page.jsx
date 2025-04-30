@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import AdminNav from "@/app/admin/components/AdminNav";
 import Footer from "@/app/components/Footer";
 import Container from "@/app/components/Container";
@@ -13,6 +12,8 @@ import MapCanvas from "../componant/MapCanvas";
 function Dndroom() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  
+  const [isCharaSearchVisible, setCharaSearchVisible] = useState(false); // เพิ่มสถานะ toggle สำหรับ CharaSearch
 
   useEffect(() => {
     console.log("Session status:", status);
@@ -31,7 +32,7 @@ function Dndroom() {
   }
 
   // ป้องกันการ flash เนื้อหาตอนยังไม่ได้ redirect
-  if (status !== "authenticated" ) {
+  if (status !== "authenticated") {
     return null; // หรือใส่ <Loading /> เพิ่มก็ได้
   }
 
@@ -40,8 +41,23 @@ function Dndroom() {
       <AdminNav session={session} />
       <Container>
         <MapCanvas />
-        <CharaSearch />
-        <DiceRoller />
+
+        {/* ปุ่ม toggle สำหรับ CharaSearch */}
+<button
+  onClick={() => setCharaSearchVisible(!isCharaSearchVisible)}
+  className="ml-20 bg-blue-500 text-white text-sm px-3 py-1 rounded mb-2 w-40"
+>
+  {isCharaSearchVisible ? "ซ่อนการค้นหาตัวละคร" : "แสดงการค้นหาตัวละคร"}
+</button>
+
+{/* CharaSearch จะแสดงหรือซ่อนตามสถานะ */}
+{isCharaSearchVisible && <CharaSearch />}
+
+
+        {/* DiceRoller อยู่บนสุดด้วย z-index สูง */}
+        <div className="fixed top-15 right-10 z-50">
+          <DiceRoller />
+        </div>
       </Container>
       <Footer />
     </div>
