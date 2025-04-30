@@ -10,22 +10,29 @@ export async function POST(req) {
 }
 
 export async function GET(req) {
-    try {
-      // เชื่อมต่อกับ MongoDB
-      await connectMongoDB();
-  
-      // ดึงข้อมูลห้องจากฐานข้อมูล
-      const roomsList = await rooms.find();
-  
-      // ส่งข้อมูลกลับในรูปแบบ JSON
-      return NextResponse.json({ rooms: roomsList }, { status: 200 });
-    } catch (error) {
-      console.error("Error fetching rooms:", error);
-  
-      // ถ้ามีข้อผิดพลาดในการเชื่อมต่อหรือดึงข้อมูล
-      return NextResponse.json({ error: "Failed to fetch rooms" }, { status: 500 });
+  try {
+    await connectMongoDB();
+    
+    const { searchParams } = new URL(req.url);
+    const name = searchParams.get("name");
+
+    let roomsList;
+
+    if (name) {
+      // ถ้ามี query ?name=...
+      roomsList = await rooms.find({ name });
+    } else {
+      // ถ้าไม่มี query name ให้ดึงทั้งหมด
+      roomsList = await rooms.find();
     }
+
+    return NextResponse.json({ rooms: roomsList }, { status: 200 });
+
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
+    return NextResponse.json({ error: "Failed to fetch rooms" }, { status: 500 });
   }
+}
 
 export async function DELETE(req) {
     const id = req.nextUrl.searchParams.get("id");

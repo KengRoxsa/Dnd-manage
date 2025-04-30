@@ -75,7 +75,7 @@ const [newContent, setNewContent] = useState("");
   }
   return (
     <Container>
-      <Navbar />
+      <Navbar session={session}/>
       <div className="flex-grow">
         <div className="container mx-auto shadow-xl my-10 p-10 rounded-xl">
           <Link
@@ -90,14 +90,14 @@ const [newContent, setNewContent] = useState("");
             <input
               type="text"
               className="w-[300px] block bg-gray-200 border py-2 px-3 rounded text-lg my-2"
-              placeholder={postData.post?.title}
+              placeholder={`Old Title : ${postData.post?.title}`}
               onChange={(e) => setNewTitle(e.target.value)}
               value={newTitle}
             />
             <input
               type="text"
               className="w-[300px] block bg-gray-200 border py-2 px-3 rounded text-lg my-2"
-              placeholder={postData.post?.img}
+              placeholder={`Old Img Src : ${postData.post?.img}`}
               onChange={(e) => setNewImg(e.target.value)}
               value={newImg}
             />
@@ -107,7 +107,7 @@ const [newContent, setNewContent] = useState("");
               id=""
               cols="30"
               rows="10"
-              placeholder={postData.post?.content}
+              placeholder={`Old Content : ${postData.post?.content}`}
               onChange={(e) => setNewContent(e.target.value)}
               value={newContent}
             >

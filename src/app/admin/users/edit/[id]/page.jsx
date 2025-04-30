@@ -8,22 +8,30 @@ import Link from "next/link";
 
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-import { Router } from "next/router";
+
 import { useRouter } from "next/navigation";
+
 
 function AdminEditUserPage({ params }) {
   const { data: session } = useSession();
   if (!session) redirect("/login");
-  if (!session?.user?.role === "admin") redirect("/welcome");
+  if (session?.user?.role !== "admin") redirect("/welcome"); // แก้ไขเงื่อนไขตรวจสอบ role
 
   const { id } = params;
 
-  const [userOldData, setUserOldData] = useState([]);
+  const [userOldData, setUserOldData] = useState({
+    name: "",
+    email: "",
+    role: "user" // กำหนดค่าเริ่มต้น
+  });
 
-  // create new user data
-  const [newName, setNewName] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  // สร้าง state สำหรับข้อมูลใหม่
+  const [formData, setFormData] = useState({
+    newName: "",
+    newEmail: "",
+    newPassword: "",
+    newRole: "user" // เพิ่ม field สำหรับ role
+  });
 
   const router = useRouter();
 
@@ -34,19 +42,34 @@ function AdminEditUserPage({ params }) {
         cache: "no-store",
       });
       if (!res.ok) {
-        throw new Error("Failed to load fetch total users", error);
+        throw new Error("Failed to fetch user data");
       }
       const data = await res.json();
       setUserOldData(data.user);
+      // ตั้งค่าข้อมูลเริ่มต้นของฟอร์มจากข้อมูลเดิม
+      setFormData({
+        newName: data.user.name,
+        newEmail: data.user.email,
+        newPassword: "",
+        newRole: data.user.role || "user"
+      });
     } catch (error) {
-      console.log("error : ", error);
+      console.log("Error loading user data:", error);
     }
   };
+
   useEffect(() => {
     getUserById(id);
-  }, []);
+  }, [id]);
 
-  // create update functiom
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -57,9 +80,10 @@ function AdminEditUserPage({ params }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-           newName,
-           newEmail,
-           newPassword,
+          newName: formData.newName,
+          newEmail: formData.newEmail,
+          newPassword: formData.newPassword,
+          newRole: formData.newRole // ส่ง role ใหม่ไปด้วย
         }),
       });
 
@@ -69,7 +93,7 @@ function AdminEditUserPage({ params }) {
       router.refresh();
       router.push("/admin/users");
     } catch (error) {
-      console.log(error);
+      console.log("Error updating user:", error);
     }
   };
 
@@ -86,32 +110,60 @@ function AdminEditUserPage({ params }) {
           </Link>
           <hr className="my-3" />
           <h3 className="text-xl">Admin Edit User Page</h3>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              className="w-[300px] block bg-gray-200 border py-2 px-3 rounded text-lg my-2"
-              placeholder={userOldData?.name || "Name"}
-              onChange={(e) => setNewName(e.target.value)}
-              value={newName}
-            />
-            <input
-              type="email"
-              className="w-[300px] block bg-gray-200 border py-2 px-3 rounded text-lg my-2"
-              placeholder={userOldData?.email || "Email"}
-              onChange={(e) => setNewEmail(e.target.value)}
-              value={newEmail}
-            />
-            <input
-              type="password"
-              className="w-[300px] block bg-gray-200 border py-2 px-3 rounded text-lg my-2"
-              placeholder={userOldData?.password || "Password"}
-              onChange={(e) => setNewPassword(e.target.value)}
-              value={newPassword}
-            />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block mb-1">Name</label>
+              <input
+                type="text"
+                name="newName"
+                className="w-full max-w-md block bg-gray-200 border py-2 px-3 rounded text-lg"
+                placeholder={userOldData?.name || "Name"}
+                onChange={handleChange}
+                value={formData.newName}
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1">Email</label>
+              <input
+                type="email"
+                name="newEmail"
+                className="w-full max-w-md block bg-gray-200 border py-2 px-3 rounded text-lg"
+                placeholder={userOldData?.email || "Email"}
+                onChange={handleChange}
+                value={formData.newEmail}
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1">Password (Leave blank to keep current)</label>
+              <input
+                type="password"
+                name="newPassword"
+                className="w-full max-w-md block bg-gray-200 border py-2 px-3 rounded text-lg"
+                placeholder="New Password"
+                onChange={handleChange}
+                value={formData.newPassword}
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1">Role</label>
+              <select
+                name="newRole"
+                className="w-full max-w-md block bg-gray-200 border py-2 px-3 rounded text-lg"
+                value={formData.newRole}
+                onChange={handleChange}
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+                {/* เพิ่ม role อื่นๆ ตามต้องการ */}
+              </select>
+            </div>
+
             <button
               type="submit"
-              name="update"
-              className="bg-green-500 text-white border py-2 px-3 rounded text-lg my-2"
+              className="bg-green-500 hover:bg-green-600 text-white border py-2 px-4 rounded text-lg mt-4"
             >
               Update User
             </button>
