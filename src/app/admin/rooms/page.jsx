@@ -100,9 +100,34 @@ export default function AdminRoomsPage() {
                         >
                           Edit
                         </Link>
-                        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-md text-sm">
-                          Delete
-                        </button>
+                        <button
+  onClick={async () => {
+    const confirmed = confirm("คุณแน่ใจหรือไม่ว่าต้องการลบห้องนี้?");
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/api/rooms/${room._id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        alert("ลบห้องเรียบร้อยแล้ว");
+        // ลบห้องออกจาก state โดยไม่ต้องโหลดใหม่
+        setRooms((prevRooms) => prevRooms.filter((r) => r._id !== room._id));
+      } else {
+        const errorData = await res.json();
+        alert("เกิดข้อผิดพลาด: " + errorData.message);
+      }
+    } catch (err) {
+      console.error("Error deleting room:", err);
+      alert("ไม่สามารถลบห้องได้");
+    }
+  }}
+  className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-md text-sm"
+>
+  Delete
+</button>
+
                       </td>
                     </tr>
                   ))
