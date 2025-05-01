@@ -7,6 +7,8 @@ import Container from "../../components/Container"
 import AdminNav from "../../components/AdminNav"
 import SideNav from "../../components/SideNav"
 import Footer from "../../components/Footer"
+import { redirect } from "next/navigation"
+
 
 export default function CreateRoomPage() {
   const { data: session } = useSession()
