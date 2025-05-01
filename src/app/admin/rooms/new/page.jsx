@@ -1,28 +1,30 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation" // เพิ่ม useRouter สำหรับการนำทาง
+import { useRouter } from "next/navigation" // ใช้ useRouter สำหรับการนำทาง
 import Container from "../../components/Container"
 import AdminNav from "../../components/AdminNav"
 import SideNav from "../../components/SideNav"
 import Footer from "../../components/Footer"
-import { redirect } from "next/navigation"
-
 
 export default function CreateRoomPage() {
   const { data: session } = useSession()
+  const router = useRouter()  // ใช้ useRouter สำหรับการนำทาง
   console.log("Session Data test:", session)
 
-  if (!session) redirect("/login")
-  if (session?.user?.role !== "admin") redirect("/welcome")
+  useEffect(() => {
+    if (!session) {
+      router.push("/login") // ใช้ router.push แทน redirect
+    } else if (session?.user?.role !== "admin") {
+      router.push("/welcome") // ใช้ router.push แทน redirect
+    }
+  }, [session, router]) // ใช้ session และ router เป็น dependencies ของ useEffect
 
   const [name, setName] = useState("")
   const [maxPlayers, setMaxPlayers] = useState(5)
   const [category, setCategory] = useState("")
   const [password, setPassword] = useState("")
-
-  const router = useRouter()  // ใช้ useRouter
 
   const handleSubmit = async (e) => {
     e.preventDefault();
