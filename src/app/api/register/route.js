@@ -14,18 +14,36 @@ export async function OPTIONS(req) {
       },
     });
   }
-export async function POST(req) {
+  export async function POST(req) {
+    const origin = req.headers.get("origin") || "";
+  
     try {
-        const {name, email, password} = await req.json();
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        await connectMongoDB();
-        await User.create({ name, email, password: hashedPassword });
-
-        return NextResponse.json({ message: "User registered successfully" }, { status: 201 });
-}
-catch(error){
-return NextResponse.json({ message: "Error accur while registering" }, { status: 500 });
-}
-}
+      const { name, email, password } = await req.json();
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      await connectMongoDB();
+      await User.create({ name, email, password: hashedPassword });
+  
+      const res = NextResponse.json({ message: "User registered successfully" }, { status: 201 });
+  
+      // ✅ เพิ่ม CORS headers ตรงนี้
+      res.headers.set("Access-Control-Allow-Origin", origin);
+      res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+      res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      res.headers.set("Access-Control-Allow-Credentials", "true");
+  
+      return res;
+    } catch (error) {
+      const res = NextResponse.json({ message: "Error occurred while registering" }, { status: 500 });
+  
+      // ✅ เผื่อ CORS แม้ error
+      res.headers.set("Access-Control-Allow-Origin", origin);
+      res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+      res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      res.headers.set("Access-Control-Allow-Credentials", "true");
+  
+      return res;
+    }
+  }
+  
