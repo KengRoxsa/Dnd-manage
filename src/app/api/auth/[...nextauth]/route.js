@@ -3,31 +3,37 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { connectMongoDB } from "../../../../../lib/mongodb";
 import User from "../../../../../models/user";
 import bcrypt from "bcryptjs";
-import { NextResponse } from "next/server";
 
+// NextAuth config
 const authOptions = {
   providers: [
     CredentialsProvider({
-
       name: "credentials",
-      
       credentials: {},
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const { email, password } = credentials;
 
         try {
           await connectMongoDB();
           const user = await User.findOne({ email });
 
-          if (!user) return null;
+          if (!user) {
+            throw new Error("No user found");
+          }
 
           const passwordMatch = await bcrypt.compare(password, user.password);
-          if (!passwordMatch) return null;
+          if (!passwordMatch) {
+            throw new Error("Incorrect password");
+          }
 
-          return user;
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            role: user.role,
+          };
         } catch (error) {
-          console.log("Error:", error);
-          return null;
+          console.error("Authorize error:", error);
+          throw new Error("Authentication failed");
         }
       },
     }),
@@ -39,60 +45,59 @@ const authOptions = {
   pages: {
     signIn: "/login",
   },
-
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        return {
-          ...token,
-          id: user.id,
-          role: user.role,
-        };
+        token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          role: token.role,
-        },
-      };
+      session.user.id = token.id;
+      session.user.role = token.role;
+      return session;
     },
   },
 };
 
-// --- เพิ่ม CORS headers ---
-const handler = NextAuth(authOptions);
+const allowedOrigins = [
+  "https://dnd-manage-ver01.vercel.app",
+  "https://dnd-manage-ver01-frontend.vercel.app",
+  "https://dnd-manage-ver01-mwysj9xmi-kengroxsas-projects.vercel.app",
+];
 
-const withCORS = (handler) => {
-  return async (req) => {
-    if (req.method === "OPTIONS") {
-      return new NextResponse(null, {
-        status: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "https://dnd-manage-ver01-frontend.vercel.app", // ปรับเป็น domain จริงหากรู้เช่น https://dnd-manage-ver01-frontend.vercel.app
-          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        },
-      });
-    }
-
-    const res = await handler(req);
-
-    const origin = req.headers.get("origin") || "*";
-    const responseWithCORS = new NextResponse(res.body, res);
-    responseWithCORS.headers.set("Access-Control-Allow-Origin", origin);
-    responseWithCORS.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    responseWithCORS.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    responseWithCORS.headers.set("Access-Control-Allow-Credentials", "true");
-
-    return responseWithCORS;
+function getCORSHeaders(origin) {
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : "",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Credentials": "true",
   };
-};
+}
 
-const wrappedHandler = withCORS(handler);
+export async function OPTIONS(req) {
+  const origin = req.headers.get("origin") || "*";
+  return new Response(null, {
+    status: 200,
+    headers: getCORSHeaders(origin),
+  });
+}
 
-export { wrappedHandler as GET, wrappedHandler as POST };
+export async function GET(req) {
+  const origin = req.headers.get("origin") || "*";
+  const response = await NextAuth(req, authOptions);
+  Object.entries(getCORSHeaders(origin)).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  return response;
+}
+
+export async function POST(req) {
+  const origin = req.headers.get("origin") || "*";
+  const response = await NextAuth(req, authOptions);
+  Object.entries(getCORSHeaders(origin)).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  return response;
+}
