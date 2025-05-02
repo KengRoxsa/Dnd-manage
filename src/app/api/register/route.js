@@ -4,7 +4,16 @@ import { connectMongoDB } from "../../../../lib/mongodb";
 import User from "../../../../models/user";
 import bcrypt from "bcrypt";
 
-
+export async function OPTIONS(req) {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "https://dnd-manage-ver01-frontend.vercel.app", // ปรับเป็น domain ที่ต้องการ
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
+  }
 export async function POST(req) {
     try {
         const {name, email, password} = await req.json();
