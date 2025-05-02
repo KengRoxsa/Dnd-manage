@@ -2,39 +2,59 @@ import { NextResponse } from "next/server";
 import { connectMongoDB } from "../../../../lib/mongodb";
 import User from "../../../../models/user";
 
-// CORS handler สำหรับ preflight requests (OPTIONS)
-export async function OPTIONS() {
+// Use the same allowed origins as in other routes
+const allowedOrigins = [
+  "https://dnd-manage-ver01.vercel.app",
+  "https://dnd-manage-ver01-frontend.vercel.app",
+  "https://dnd-manage-ver01-mwysj9xmi-kengroxsas-projects.vercel.app",
+];
+
+function getCORSHeaders(origin) {
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : "",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Credentials": "true",
+  };
+}
+
+export async function OPTIONS(req) {
+  const origin = req.headers.get("origin") || "";
   return new NextResponse(null, {
     status: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*", // หรือใส่ origin ที่ต้องการอนุญาตแบบเฉพาะเจาะจง
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
+    headers: getCORSHeaders(origin),
   });
 }
 
 export async function POST(req) {
+  const origin = req.headers.get("origin") || "";
+  
   try {
     await connectMongoDB();
     const { email } = await req.json();
     const user = await User.findOne({ email }).select("_id");
-    console.log("User:", user);
-
-    return new NextResponse(JSON.stringify({ user }), {
-      status: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*", // หรือ origin จริงของ frontend
-        "Content-Type": "application/json",
-      },
+    
+    const response = NextResponse.json({ user }, { status: 200 });
+    
+    // Add CORS headers
+    Object.entries(getCORSHeaders(origin)).forEach(([key, value]) => {
+      response.headers.set(key, value);
     });
+    
+    return response;
   } catch (error) {
-    console.log(error);
-    return new NextResponse("Internal Server Error", {
-      status: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
+    console.error("User exists check error:", error);
+    
+    const response = NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+    
+    // Add CORS headers even on error
+    Object.entries(getCORSHeaders(origin)).forEach(([key, value]) => {
+      response.headers.set(key, value);
     });
+    
+    return response;
   }
 }

@@ -4,7 +4,7 @@ import { connectMongoDB } from "../../../../../lib/mongodb";
 import User from "../../../../../models/user";
 import bcrypt from "bcryptjs";
 
-// NextAuth config
+// Define the authentication configuration
 const authOptions = {
   providers: [
     CredentialsProvider({
@@ -61,43 +61,30 @@ const authOptions = {
   },
 };
 
-const allowedOrigins = [
-  "https://dnd-manage-ver01.vercel.app",
-  "https://dnd-manage-ver01-frontend.vercel.app",
-  "https://dnd-manage-ver01-mwysj9xmi-kengroxsas-projects.vercel.app",
-];
+// Use NextAuth handler directly to handle requests
+const handler = NextAuth(authOptions);
 
-function getCORSHeaders(origin) {
-  return {
-    "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : "",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Credentials": "true",
-  };
-}
+// Export handlers for GET, POST, and OPTIONS methods
+export { handler as GET, handler as POST };
 
+// Add OPTIONS handler for CORS preflight requests
 export async function OPTIONS(req) {
-  const origin = req.headers.get("origin") || "*";
+  const allowedOrigins = [
+    "https://dnd-manage-ver01.vercel.app",
+    "https://dnd-manage-ver01-frontend.vercel.app",
+    "https://dnd-manage-ver01-mwysj9xmi-kengroxsas-projects.vercel.app",
+  ];
+  
+  const origin = req.headers.get("origin") || "";
+  
+  // Return simple preflight response
   return new Response(null, {
     status: 200,
-    headers: getCORSHeaders(origin),
+    headers: {
+      "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : "",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Credentials": "true",
+    },
   });
-}
-
-export async function GET(req) {
-  const origin = req.headers.get("origin") || "*";
-  const response = await NextAuth(req, authOptions);
-  Object.entries(getCORSHeaders(origin)).forEach(([key, value]) => {
-    response.headers.set(key, value);
-  });
-  return response;
-}
-
-export async function POST(req) {
-  const origin = req.headers.get("origin") || "*";
-  const response = await NextAuth(req, authOptions);
-  Object.entries(getCORSHeaders(origin)).forEach(([key, value]) => {
-    response.headers.set(key, value);
-  });
-  return response;
 }
